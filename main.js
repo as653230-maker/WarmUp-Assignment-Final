@@ -11,6 +11,14 @@ function convertToSeconds(timeStr) {
     return hours * 3600 + minutes * 60 + seconds;
 }
 // Function 1: getShiftDuration(startTime, endTime)
+
+// startTime: (typeof string) formatted as hh:mm:ss am or hh:mm:ss pm
+
+// endTime: (typeof string) formatted as hh:mm:ss am or hh:mm:ss pm
+
+// Returns: string formatted as h:mm:ss
+
+// ============================================================
 function getShiftDuration(startTime, endTime) {
 
     let startSeconds = convertToSeconds(startTime);
@@ -29,16 +37,6 @@ function getShiftDuration(startTime, endTime) {
 
     return `${hours}:${minutes}:${seconds}`;
 }
-// startTime: (typeof string) formatted as hh:mm:ss am or hh:mm:ss pm
-"h:mm:ss"
-// endTime: (typeof string) formatted as hh:mm:ss am or hh:mm:ss pm
-"h:mm:ss"
-// Returns: string formatted as h:mm:ss
-"h:mm:ss"
-// ============================================================
-function getShiftDuration(startTime, endTime) {
-    // TODO: Implement this function
-}
 
 // ============================================================
 // Function 2: getIdleTime(startTime, endTime)
@@ -46,40 +44,129 @@ function getShiftDuration(startTime, endTime) {
 // endTime: (typeof string) formatted as hh:mm:ss am or hh:mm:ss pm
 // Returns: string formatted as h:mm:ss
 // ============================================================
-function getIdleTime(startTime, endTime) {
-    // TODO: Implement this function
+function convertToSeconds(timeStr){
+    let [time, period] = timeStr.split(" ");
+    let [h,m,s] = time.split(":").map(Number);
+
+    if(period === "pm" && h !== 12){
+        h += 12;
+    }
+
+    if(period === "am" && h === 12){
+        h = 0;
+    }
+
+    return h*3600 + m*60 + s;
 }
 
+function getIdleTime(startTime, endTime){
+
+    let start = convertToSeconds(startTime);
+    let end = convertToSeconds(endTime);
+
+    let startWork = convertToSeconds("8:00:00 am");
+    let endWork = convertToSeconds("10:00:00 pm");
+
+    let idle = 0;
+
+    // idle before 8am
+    if(start < startWork){
+        idle += Math.min(end, startWork) - start;
+    }
+
+    // idle after 10pm
+    if(end > endWork){
+        idle += end - Math.max(start, endWork);
+    }
+
+    let hours = Math.floor(idle/3600);
+    idle %= 3600;
+
+    let minutes = Math.floor(idle/60);
+    let seconds = idle % 60;
+
+    minutes = String(minutes).padStart(2,"0");
+    seconds = String(seconds).padStart(2,"0");
+
+    return `${hours}:${minutes}:${seconds}`;
+}
 // ============================================================
 // Function 3: getActiveTime(shiftDuration, idleTime)
 // shiftDuration: (typeof string) formatted as h:mm:ss
 // idleTime: (typeof string) formatted as h:mm:ss
 // Returns: string formatted as h:mm:ss
 // ============================================================
-function getActiveTime(shiftDuration, idleTime) {
-    // TODO: Implement this function
+function durationToSeconds(time){
+    let [h,m,s] = time.split(":").map(Number);
+    return h*3600 + m*60 + s;
 }
+function getActiveTime(shiftDuration, idleTime){
 
+    let shift = durationToSeconds(shiftDuration);
+    let idle = durationToSeconds(idleTime);
+
+    let active = shift - idle;
+
+    let hours = Math.floor(active/3600);
+    active %= 3600;
+
+    let minutes = Math.floor(active/60);
+    let seconds = active % 60;
+
+    minutes = String(minutes).padStart(2,"0");
+    seconds = String(seconds).padStart(2,"0");
+
+    return `${hours}:${minutes}:${seconds}`;
+}
 // ============================================================
 // Function 4: metQuota(date, activeTime)
 // date: (typeof string) formatted as yyyy-mm-dd
 // activeTime: (typeof string) formatted as h:mm:ss
 // Returns: boolean
 // ============================================================
-function metQuota(date, activeTime) {
-    // TODO: Implement this function
+function durationToSeconds(time){
+    let [h,m,s] = time.split(":").map(Number);
+    return h*3600 + m*60 + s;
 }
 
+function metQuota(date, activeTime){
+
+    let active = durationToSeconds(activeTime);
+
+    let normalQuota = durationToSeconds("8:24:00");
+    let eidQuota = durationToSeconds("6:00:00");
+
+    let quota = normalQuota;
+
+    // check if date is inside Eid period
+    if(date >= "2025-04-10" && date <= "2025-04-30"){
+        quota = eidQuota;
+    }
+
+    return active >= quota;
+}
 // ============================================================
 // Function 5: addShiftRecord(textFile, shiftObj)
 // textFile: (typeof string) path to shifts text file
 // shiftObj: (typeof object) has driverID, driverName, date, startTime, endTime
 // Returns: object with 10 properties or empty object {}
 // ============================================================
-function addShiftRecord(textFile, shiftObj) {
-    // TODO: Implement this function
-}
+function addShiftRecord(date, startTime, endTime, breakTime){
 
+    let shiftTime = getShiftTime(startTime, endTime);
+    let activeTime = getActiveTime(shiftTime, breakTime);
+    let idleTime = getIdleTime(shiftTime, activeTime);
+    let quotaMet = metQuota(date, activeTime);
+
+    let newRecord = `${date},${startTime},${endTime},${breakTime},${shiftTime},${activeTime},${idleTime},${quotaMet}`;
+
+    const fs = require("fs");
+
+    let file = fs.readFileSync("shifts.txt", "utf8");
+    file += "\n" + newRecord;
+
+    fs.writeFileSync("shifts.txt", file);
+}
 // ============================================================
 // Function 6: setBonus(textFile, driverID, date, newValue)
 // textFile: (typeof string) path to shifts text file
