@@ -149,22 +149,7 @@ function metQuota(date, activeTime){
 // shiftObj: (typeof object) has driverID, driverName, date, startTime, endTime
 // Returns: object with 10 properties or empty object {}
 // ============================================================
-function addShiftRecord(date, startTime, endTime, breakTime){
 
-    let shiftTime = getShiftTime(startTime, endTime);
-    let activeTime = getActiveTime(shiftTime, breakTime);
-    let idleTime = getIdleTime(shiftTime, activeTime);
-    let quotaMet = metQuota(date, activeTime);
-
-    let newRecord = `${date},${startTime},${endTime},${breakTime},${shiftTime},${activeTime},${idleTime},${quotaMet}`;
-
-    const fs = require("fs");
-
-    let file = fs.readFileSync("shifts.txt", "utf8");
-    file += "\n" + newRecord;
-
-    fs.writeFileSync("shifts.txt", file);
-}
 // ============================================================
 // Function 6: setBonus(textFile, driverID, date, newValue)
 // textFile: (typeof string) path to shifts text file
