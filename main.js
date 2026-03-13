@@ -173,29 +173,7 @@ function addShiftRecord(date, startTime, endTime, breakTime){
 // newValue: (typeof boolean)
 // Returns: nothing (void)
 // ============================================================
-const fs = require("fs");
 
-function setBonus(textFile, driverID, date, newValue){
-
-    let file = fs.readFileSync(textFile, "utf8");
-
-    let lines = file.split("\n");
-
-    for(let i = 0; i < lines.length; i++){
-
-        let parts = lines[i].split(",");
-
-        if(parts[0] === driverID && parts[2] === date){
-
-            // hasBonus is the last column
-            parts[9] = newValue;
-
-            lines[i] = parts.join(",");
-        }
-    }
-
-    fs.writeFileSync(textFile, lines.join("\n"));
-}
 // ============================================================
 // Function 7: countBonusPerMonth(textFile, driverID, month)
 // textFile: (typeof string) path to shifts text file
@@ -203,44 +181,7 @@ function setBonus(textFile, driverID, date, newValue){
 // month: (typeof string) formatted as mm or m
 // Returns: number (-1 if driverID not found)
 // ============================================================
-const fs = require("fs");
 
-function countBonusPerMonth(textFile, driverID, month){
-
-    let file = fs.readFileSync(textFile, "utf8");
-    let lines = file.split("\n");
-
-    let count = 0;
-    let driverFound = false;
-
-    let monthNum = parseInt(month);
-
-    for(let line of lines){
-
-        let parts = line.split(",");
-
-        let id = parts[0];
-        let date = parts[2];
-        let hasBonus = parts[9];
-
-        if(id === driverID){
-
-            driverFound = true;
-
-            let recordMonth = parseInt(date.split("-")[1]);
-
-            if(recordMonth === monthNum && hasBonus === "true"){
-                count++;
-            }
-        }
-    }
-
-    if(!driverFound){
-        return -1;
-    }
-
-    return count;
-}
 // ============================================================
 // Function 8: getTotalActiveHoursPerMonth(textFile, driverID, month)
 // textFile: (typeof string) path to shifts text file
