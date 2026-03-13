@@ -268,38 +268,7 @@ function secondsToTime(totalSeconds){
     return `${h}:${String(m).padStart(2,"0")}:${String(s).padStart(2,"0")}`;
 }
 
-const fs = require("fs");
 
-function getTotalActiveHoursPerMonth(textFile, driverID, month){
-
-    let file = fs.readFileSync(textFile, "utf8");
-
-    let lines = file.split("\n");
-
-    let totalSeconds = 0;
-
-    for(let line of lines){
-
-        let parts = line.split(",");
-
-        let id = parts[0];
-        let date = parts[2];
-        let activeTime = parts[7];
-
-        if(id === driverID){
-
-            let recordMonth = parseInt(date.split("-")[1]);
-
-            if(recordMonth === month){
-
-                totalSeconds += timeToSeconds(activeTime);
-
-            }
-        }
-    }
-
-    return secondsToTime(totalSeconds);
-}
 // ============================================================
 // Function 9: getRequiredHoursPerMonth(textFile, rateFile, bonusCount, driverID, month)
 // textFile: (typeof string) path to shifts text file
