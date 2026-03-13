@@ -319,6 +319,8 @@ function getDayOfWeek(date){
 }
 const fs = require("fs");
 
+const fs = require("fs");
+
 function getRequiredHoursPerMonth(textFile, rateFile, bonusCount, driverID, month){
 
     let shiftFile = fs.readFileSync(textFile,"utf8").split("\n");
