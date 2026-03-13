@@ -127,24 +127,7 @@ function getActiveTime(shiftDuration, idleTime){
 function durationToSeconds(time){
     let [h,m,s] = time.split(":").map(Number);
     return h*3600 + m*60 + s;
-}
 
-function metQuota(date, activeTime){
-
-    let active = durationToSeconds(activeTime);
-
-    let normalQuota = durationToSeconds("8:24:00");
-    let eidQuota = durationToSeconds("6:00:00");
-
-    let quota = normalQuota;
-
-    // check if date is inside Eid period
-    if(date >= "2025-04-10" && date <= "2025-04-30"){
-        quota = eidQuota;
-    }
-
-    return active >= quota;
-}
 // ============================================================
 // Function 5: addShiftRecord(textFile, shiftObj)
 // textFile: (typeof string) path to shifts text file
