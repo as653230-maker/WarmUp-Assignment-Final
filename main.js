@@ -203,7 +203,44 @@ function setBonus(textFile, driverID, date, newValue){
 // month: (typeof string) formatted as mm or m
 // Returns: number (-1 if driverID not found)
 // ============================================================
+const fs = require("fs");
 
+function countBonusPerMonth(textFile, driverID, month){
+
+    let file = fs.readFileSync(textFile, "utf8");
+    let lines = file.split("\n");
+
+    let count = 0;
+    let driverFound = false;
+
+    let monthNum = parseInt(month);
+
+    for(let line of lines){
+
+        let parts = line.split(",");
+
+        let id = parts[0];
+        let date = parts[2];
+        let hasBonus = parts[9];
+
+        if(id === driverID){
+
+            driverFound = true;
+
+            let recordMonth = parseInt(date.split("-")[1]);
+
+            if(recordMonth === monthNum && hasBonus === "true"){
+                count++;
+            }
+        }
+    }
+
+    if(!driverFound){
+        return -1;
+    }
+
+    return count;
+}
 // ============================================================
 // Function 8: getTotalActiveHoursPerMonth(textFile, driverID, month)
 // textFile: (typeof string) path to shifts text file
