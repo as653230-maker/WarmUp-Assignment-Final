@@ -173,7 +173,29 @@ function addShiftRecord(date, startTime, endTime, breakTime){
 // newValue: (typeof boolean)
 // Returns: nothing (void)
 // ============================================================
+const fs = require("fs");
 
+function setBonus(textFile, driverID, date, newValue){
+
+    let file = fs.readFileSync(textFile, "utf8");
+
+    let lines = file.split("\n");
+
+    for(let i = 0; i < lines.length; i++){
+
+        let parts = lines[i].split(",");
+
+        if(parts[0] === driverID && parts[2] === date){
+
+            // hasBonus is the last column
+            parts[9] = newValue;
+
+            lines[i] = parts.join(",");
+        }
+    }
+
+    fs.writeFileSync(textFile, lines.join("\n"));
+}
 // ============================================================
 // Function 7: countBonusPerMonth(textFile, driverID, month)
 // textFile: (typeof string) path to shifts text file
